@@ -7,9 +7,8 @@ module OmniAuth
       option :name, 'imis'
 
       option :client_options, {
-        :site => 'http://store.atsol.org',
-        :user_info_url => '/ssobsb_Webservices/wsblueskybroadcast.asmx/BlueSkyBroadcastGetUserProfile',
-        :authorize_url => '/ssobsb/sso.aspx'
+        :user_info_url => 'http://store.atsol.org/ssobsb_Webservices/wsblueskybroadcast.asmx/BlueSkyBroadcastGetUserProfile',
+        :authorize_url => 'http://store.atsol.org/ssobsb/sso.aspx'
       }
 
       uid { raw_info[:id] }
@@ -69,11 +68,11 @@ module OmniAuth
       private
 
       def user_info_url
-        options.client_options.site + options.client_options.user_info_url
+        options.client_options.user_info_url
       end
 
       def authorize_url
-        options.client_options.site + options.client_options.authorize_url
+        options.client_options.authorize_url
       end
     end
   end

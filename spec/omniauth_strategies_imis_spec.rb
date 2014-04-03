@@ -11,11 +11,11 @@ describe OmniAuth::Strategies::Imis do
     end
 
     it 'should have correct user_info_url' do
-      expect(@strategy.options.client_options.user_info_url).to eq('/ssobsb_Webservices/wsblueskybroadcast.asmx/BlueSkyBroadcastGetUserProfile')
+      expect(@strategy.options.client_options.user_info_url).to eq('http://store.atsol.org/ssobsb_Webservices/wsblueskybroadcast.asmx/BlueSkyBroadcastGetUserProfile')
     end
 
     it 'should have correct authorize_url' do
-      expect(@strategy.options.client_options.authorize_url).to eq('/ssobsb/sso.aspx')
+      expect(@strategy.options.client_options.authorize_url).to eq('http://store.atsol.org/ssobsb/sso.aspx')
     end
   end
 
