@@ -1,5 +1,6 @@
 require 'omniauth-oauth2'
-require 'httparty'
+require 'rest_client'
+require 'multi_xml'
 
 module OmniAuth
   module Strategies
@@ -56,7 +57,11 @@ module OmniAuth
       end
 
       def get_user_info
-        response = HTTParty.get(user_info_url, query: { token: access_token[:token] }).parsed_response
+        RestClient.proxy = proxy_url unless proxy_url.nil?
+
+        response = RestClient.get(user_info_url, params: { token: access_token[:token] })
+        response = MultiXml.parse(response)
+
         info = {
           id: response['BlueSkyBroadcastUserProfile']['CustomerID'],
           first_name: response['BlueSkyBroadcastUserProfile']['FirstName'],
@@ -67,12 +72,16 @@ module OmniAuth
 
       private
 
-      def user_info_url
-        options.client_options.user_info_url
-      end
-
       def authorize_url
         options.client_options.authorize_url
+      end
+
+      def proxy_url
+        options.client_options.proxy_url
+      end
+
+      def user_info_url
+        options.client_options.user_info_url
       end
     end
   end
