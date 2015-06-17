@@ -8,22 +8,22 @@ module OmniAuth
       option :name, 'imis'
 
       option :client_options, {
-        :user_info_url => 'http://store.atsol.org/ssobsb_Webservices/wsblueskybroadcast.asmx/BlueSkyBroadcastGetUserProfile',
-        :authorize_url => 'http://store.atsol.org/ssobsb/sso.aspx'
+        user_info_url: 'http://store.atsol.org/ssobsb_Webservices/wsblueskybroadcast.asmx',
+        authorize_url: 'http://store.atsol.org/ssobsb/sso.aspx'
       }
 
       uid { raw_info[:id] }
 
       info do
         {
-          :first_name   => raw_info[:first_name],
-          :last_name    => raw_info[:last_name],
-          :email        => raw_info[:email]
+          first_name: raw_info[:first_name],
+          last_name: raw_info[:last_name],
+          email: raw_info[:email]
         }
       end
 
       extra do
-        { :raw_info => raw_info }
+        { raw_info: raw_info }
       end
 
       def request_phase
@@ -32,8 +32,8 @@ module OmniAuth
 
       def callback_phase
         self.access_token = {
-          :token =>  request.params['TOKEN'],
-          :token_expires => 60
+          token: request.params['TOKEN'],
+          token_expires: 60
         }
         self.env['omniauth.auth'] = auth_hash
         self.env['omniauth.origin'] = '/' + request.params['origin']
@@ -45,7 +45,7 @@ module OmniAuth
       end
 
       def auth_hash
-        hash = AuthHash.new(:provider => name, :uid => uid)
+        hash = AuthHash.new(provider: name, uid: uid)
         hash.info = info
         hash.credentials = creds
         hash.extra = extra
@@ -81,7 +81,7 @@ module OmniAuth
       end
 
       def user_info_url
-        options.client_options.user_info_url
+        options.client_options.user_info_url + '?op=BlueSkyBroadcastGetUserProfile'
       end
     end
   end

@@ -10,20 +10,8 @@ describe OmniAuth::Strategies::Imis do
       expect(@strategy.options.name).to eq('imis')
     end
 
-    it 'should have correct user_info_url' do
-      expect(@strategy.options.client_options.user_info_url).to eq('http://store.atsol.org/ssobsb_Webservices/wsblueskybroadcast.asmx/BlueSkyBroadcastGetUserProfile')
-    end
-
     it 'should have correct authorize_url' do
       expect(@strategy.options.client_options.authorize_url).to eq('http://store.atsol.org/ssobsb/sso.aspx')
-    end
-  end
-
-  context '#user_info_url' do
-    it 'returns url for getting information' do
-      url = 'http://store.atsol.org/ssobsb_Webservices/wsblueskybroadcast.asmx/BlueSkyBroadcastGetUserProfile'
-
-      expect(@strategy.send('user_info_url')).to be_eql url
     end
   end
 
