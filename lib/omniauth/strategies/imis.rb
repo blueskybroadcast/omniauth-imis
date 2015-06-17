@@ -81,7 +81,7 @@ module OmniAuth
       end
 
       def user_info_url
-        options.client_options.user_info_url + '?op=BlueSkyBroadcastGetUserProfile'
+        options.client_options.user_info_url + '/BlueSkyBroadcastGetUserProfile'
       end
     end
   end
