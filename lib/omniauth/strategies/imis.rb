@@ -59,10 +59,15 @@ module OmniAuth
       def get_user_info
         RestClient.proxy = proxy_url unless proxy_url.nil?
 
-        response = RestClient.get(user_info_url, params: { token: access_token[:token] })
+        response = begin
+                     RestClient.get(user_info_url, params: { token: access_token[:token] })
+                   rescue RestClient::ExceptionWithResponse => _e
+                     RestClient.post(user_info_url, token: URI.decode(access_token[:token]))
+                   end
+
         response = MultiXml.parse(response)
 
-        info = {
+        {
           id: response['BlueSkyBroadcastUserProfile']['CustomerID'],
           first_name: response['BlueSkyBroadcastUserProfile']['FirstName'],
           last_name: response['BlueSkyBroadcastUserProfile']['LastName'],
