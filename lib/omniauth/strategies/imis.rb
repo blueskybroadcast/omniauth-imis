@@ -14,19 +14,9 @@ module OmniAuth
         authorize_url: 'http://store.atsol.org/ssobsb/sso.aspx'
       }
 
-      uid { raw_info[:id] }
+      uid { raw_user_info[:id] }
 
-      info do
-        {
-          first_name: raw_info[:first_name],
-          last_name: raw_info[:last_name],
-          email: raw_info[:email]
-        }
-      end
-
-      extra do
-        { raw_info: raw_info }
-      end
+      info { raw_user_info }
 
       def request_phase
         redirect authorize_url
@@ -59,8 +49,8 @@ module OmniAuth
         hash
       end
 
-      def raw_info
-        @raw_info ||= get_user_info
+      def raw_user_info
+        @raw_user_info ||= get_user_info
       end
 
       def get_user_info
@@ -91,7 +81,12 @@ module OmniAuth
           id: parsed_response['BlueSkyBroadcastUserProfile']['CustomerID'],
           first_name: parsed_response['BlueSkyBroadcastUserProfile']['FirstName'],
           last_name: parsed_response['BlueSkyBroadcastUserProfile']['LastName'],
-          email: parsed_response['BlueSkyBroadcastUserProfile']['Email']
+          email: parsed_response['BlueSkyBroadcastUserProfile']['Email'],
+          member_type: parse_additional_field_values_for(parsed_response, 'MEMBERTYPE').first,
+          custom_fields_data: custom_fields_data(parsed_response),
+          section_codes: parse_additional_field_values_for(parsed_response, 'PRODUCTCODE'),
+          dues_class: parse_additional_field_values_for(parsed_response, 'DUESCLASS').first,
+          free_cle_hours: parse_additional_field_values_for(parsed_response, 'FREECLECREDITHRS').first
         }
 
         @app_event.update(raw_data: {
@@ -107,6 +102,17 @@ module OmniAuth
       end
 
       private
+
+      def custom_fields_data(parsed_response)
+        { 'full_address' => parse_additional_field_values_for(parsed_response, 'FULLADDRESS').first }
+      end
+
+      def parse_additional_field_values_for(parsed_response, field_name)
+        additional_field = parsed_response.dig('BlueSkyBroadcastUserProfile', 'AdditionalFields', 'Field')
+        if additional_field.present?
+          additional_field.map { |field| field['Value'] if field['Name'] == field_name }.compact.uniq
+        end
+      end
 
       def authorize_url
         options.client_options.authorize_url
