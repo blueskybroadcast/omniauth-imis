@@ -82,11 +82,11 @@ module OmniAuth
           first_name: parsed_response['BlueSkyBroadcastUserProfile']['FirstName'],
           last_name: parsed_response['BlueSkyBroadcastUserProfile']['LastName'],
           email: parsed_response['BlueSkyBroadcastUserProfile']['Email'],
-          member_type: parse_additional_field_values_for(parsed_response, 'MEMBERTYPE').first,
+          member_type: parse_additional_field_values_for(parsed_response, 'MEMBERTYPE')&.first,
           custom_fields_data: custom_fields_data(parsed_response),
           section_codes: parse_additional_field_values_for(parsed_response, 'PRODUCTCODE'),
-          dues_class: parse_additional_field_values_for(parsed_response, 'DUESCLASS').first,
-          free_cle_hours: parse_additional_field_values_for(parsed_response, 'FREECLECREDITHRS').first
+          dues_class: parse_additional_field_values_for(parsed_response, 'DUESCLASS')&.first,
+          free_cle_hours: parse_additional_field_values_for(parsed_response, 'FREECLECREDITHRS')&.first
         }
 
         @app_event.update(raw_data: {
@@ -104,7 +104,7 @@ module OmniAuth
       private
 
       def custom_fields_data(parsed_response)
-        { 'full_address' => parse_additional_field_values_for(parsed_response, 'FULLADDRESS').first }
+        { 'full_address' => parse_additional_field_values_for(parsed_response, 'FULLADDRESS')&.first }
       end
 
       def parse_additional_field_values_for(parsed_response, field_name)
