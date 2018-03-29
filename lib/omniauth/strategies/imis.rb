@@ -54,16 +54,14 @@ module OmniAuth
       end
 
       def get_user_info
-        RestClient.proxy = proxy_url unless proxy_url.nil?
-
         request_log_text = "#{provider_name} Authentication Request:\nGET #{user_info_url}, params: { token: #{Provider::SECURITY_MASK} }"
         @app_event.logs.create(level: 'info', text: request_log_text)
 
         begin
-          response = RestClient.get(user_info_url, params: { token: access_token[:token] })
+          response = RestClient::Request.execute(request_options_get)
         rescue RestClient::ExceptionWithResponse => _error
           begin
-            response = RestClient.post(user_info_url, token: URI.decode(access_token[:token]))
+            response = RestClient::Request.execute(request_options_post)
           rescue RestClient::ExceptionWithResponse => e
             error_log_text = "#{provider_name} Authentication Response Error #{e.message} (code: #{e.response&.code}):\n#{e.response}"
             @app_event.logs.create(level: 'error', text: error_log_text)
@@ -120,6 +118,32 @@ module OmniAuth
 
       def proxy_url
         options.client_options.proxy_url
+      end
+
+      def request_options_get
+        options = {
+          method: :get,
+          url: user_info_url,
+          headers: {
+            params: {
+              token: access_token[:token]
+            }
+          }
+        }
+        options[:proxy] = proxy_url if proxy_url
+        options
+      end
+
+      def request_options_post
+        options = {
+          method: :post,
+          url: user_info_url,
+          payload: {
+            token: URI.decode(access_token[:token])
+          }
+        }
+        options[:proxy] = proxy_url if proxy_url
+        options
       end
 
       def user_info_url
