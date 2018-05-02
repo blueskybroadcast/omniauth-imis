@@ -11,7 +11,8 @@ module OmniAuth
 
       option :client_options, {
         user_info_url: 'http://store.atsol.org/ssobsb_Webservices/wsblueskybroadcast.asmx',
-        authorize_url: 'http://store.atsol.org/ssobsb/sso.aspx'
+        authorize_url: 'http://store.atsol.org/ssobsb/sso.aspx',
+        custom_field_keys: []
       }
 
       uid { raw_user_info[:id] }
@@ -104,7 +105,9 @@ module OmniAuth
       private
 
       def custom_fields_data(parsed_response)
-        { 'full_address' => parse_additional_field_values_for(parsed_response, 'FULLADDRESS')&.first }
+        options.client_options.custom_field_keys.to_a.each_with_object({}) do |key, hash|
+          hash[key.downcase] = parse_additional_field_values_for(parsed_response, key)&.first
+        end
       end
 
       def parse_additional_field_values_for(parsed_response, field_name)
