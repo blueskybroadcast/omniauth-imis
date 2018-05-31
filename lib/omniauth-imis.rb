@@ -3,6 +3,5 @@ require "omniauth/strategies/imis"
 
 module Omniauth
   module Imis
-
   end
 end
